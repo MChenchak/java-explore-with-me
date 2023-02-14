@@ -13,6 +13,7 @@ import ru.practicum.repository.HitRepository;
 import javax.persistence.Tuple;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,9 @@ public class HitServiceImpl implements HitService {
                         maps.put(tupleElement.getAlias(), r.get(tupleElement.getAlias()));
                     });
                     return modelMapper.map(maps, ViewStats.class);
-                }).collect(Collectors.toList());
+                })
+                .sorted(Comparator.comparingInt(ViewStats::getHits))
+                .collect(Collectors.toList());
 
         return stats;
     }
