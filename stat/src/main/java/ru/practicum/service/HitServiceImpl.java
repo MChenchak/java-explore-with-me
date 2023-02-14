@@ -40,7 +40,7 @@ public class HitServiceImpl implements HitService {
                     });
                     return modelMapper.map(maps, ViewStats.class);
                 })
-                .sorted(Comparator.comparingInt(ViewStats::getHits))
+                .sorted(Comparator.comparingInt(ViewStats::getHits).reversed())
                 .collect(Collectors.toList());
 
         return stats;
