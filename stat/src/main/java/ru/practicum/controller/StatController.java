@@ -23,7 +23,7 @@ public class StatController {
     public List<ViewStats> getStats(@RequestParam String start,
                                     @RequestParam String end,
                                     @RequestParam List<String> uris,
-                                    @RequestParam boolean unique) {
+                                    @RequestParam(required = false) boolean unique) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime s = LocalDateTime.parse(start, formatter);
         LocalDateTime e = LocalDateTime.parse(end, formatter);
