@@ -29,15 +29,14 @@ public class HitServiceImpl implements HitService {
 
     @Override
     public List<ViewStats> getHitStat(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique) {
-        List<Tuple> results  = hitRepository.searchHit(start, end, uris, unique)
+        List<Tuple> results = hitRepository.searchHit(start, end, uris, unique)
                 .orElseThrow(() -> new NotFoundException("Data not found"));
 
         List<ViewStats> stats = results.stream()
                 .map(r -> {
                     Map<String, Object> maps = new HashMap<>();
-                    r.getElements().forEach(tupleElement -> {
-                        maps.put(tupleElement.getAlias(), r.get(tupleElement.getAlias()));
-                    });
+                    r.getElements().forEach(tupleElement ->
+                            maps.put(tupleElement.getAlias(), r.get(tupleElement.getAlias())));
                     return modelMapper.map(maps, ViewStats.class);
                 })
                 .sorted(Comparator.comparingInt(ViewStats::getHits).reversed())

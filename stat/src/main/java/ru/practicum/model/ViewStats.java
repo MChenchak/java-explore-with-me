@@ -1,10 +1,8 @@
 package ru.practicum.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Getter
-@Setter
+@Data
 public class ViewStats {
     private String app;
     private String uri;
