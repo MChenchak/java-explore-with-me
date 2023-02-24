@@ -259,7 +259,7 @@ public class EventServiceImpl implements EventService {
 
     private EventDto setConfirmedRequests(EventDto eventDto) {
         eventDto.setConfirmedRequests(participationRepository.countParticipationByEventIdAndStatus(eventDto.getId(),
-                StatusRequest.PENDING));
+                StatusRequest.CANCELED));
         return eventDto;
     }
 
