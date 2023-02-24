@@ -14,6 +14,7 @@ import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.participation.model.StatusRequest;
 import ru.practicum.participation.repository.ParticipationRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
@@ -258,7 +259,7 @@ public class EventServiceImpl implements EventService {
 
     private EventDto setConfirmedRequests(EventDto eventDto) {
         eventDto.setConfirmedRequests(participationRepository.countParticipationByEventIdAndStatus(eventDto.getId(),
-                CONFIRMED));
+                StatusRequest.PENDING));
         return eventDto;
     }
 
