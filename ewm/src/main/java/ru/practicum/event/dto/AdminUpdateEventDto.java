@@ -1,6 +1,7 @@
 package ru.practicum.event.dto;
 
 import lombok.*;
+import ru.practicum.event.model.StateAction;
 
 @Data
 @NoArgsConstructor
@@ -24,4 +25,6 @@ public class AdminUpdateEventDto {
     private Boolean requestModeration;
 
     private String title;
+
+    private StateAction stateAction;
 }

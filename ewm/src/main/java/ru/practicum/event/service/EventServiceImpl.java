@@ -10,11 +10,11 @@ import ru.practicum.event.mapper.LocationMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.Location;
 import ru.practicum.event.model.State;
+import ru.practicum.event.model.StateAction;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.NotFoundException;
-import ru.practicum.participation.model.StatusRequest;
 import ru.practicum.participation.repository.ParticipationRepository;
 import ru.practicum.user.model.User;
 import ru.practicum.user.repository.UserRepository;
@@ -231,6 +231,11 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(eventDto.getTitle()).ifPresent(event::setTitle);
+
+        if (eventDto.getStateAction() != null && eventDto.getStateAction().equals(StateAction.REJECT_EVENT)) {
+            event.setState(CANCELED);
+        }
+
         EventDto returnEventDto = EventMapper.toEventDto(eventRepository.save(event));
         return setConfirmedRequests(returnEventDto);
     }
@@ -259,7 +264,7 @@ public class EventServiceImpl implements EventService {
 
     private EventDto setConfirmedRequests(EventDto eventDto) {
         eventDto.setConfirmedRequests(participationRepository.countParticipationByEventIdAndStatus(eventDto.getId(),
-                StatusRequest.CANCELED));
+                CONFIRMED));
         return eventDto;
     }
 
