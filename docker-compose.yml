@@ -12,7 +12,7 @@ services:
 
 
   stats-server:
-    build: stat
+    build: stat/
     container_name: stat_svc
     ports:
       - "9090:9090"
@@ -25,7 +25,9 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
   ewm-service:
-    build: ewm
+    build:
+      context: ewm
+      dockerfile: Dockerfile
     container_name: ewm-service
     ports:
       - "8080:8080"
