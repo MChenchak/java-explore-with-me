@@ -10,7 +10,6 @@ import ru.practicum.event.mapper.LocationMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.Location;
 import ru.practicum.event.model.State;
-import ru.practicum.event.model.StateAction;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.event.repository.LocationRepository;
 import ru.practicum.exception.BadRequestException;
@@ -22,10 +21,13 @@ import ru.practicum.user.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static ru.practicum.event.model.State.*;
+import static ru.practicum.event.model.StateAction.PUBLISH_EVENT;
+import static ru.practicum.event.model.StateAction.REJECT_EVENT;
 import static ru.practicum.participation.model.StatusRequest.CONFIRMED;
 import static ru.practicum.user.Constant.DATE_TIME_FORMATTER;
 
@@ -227,15 +229,18 @@ public class EventServiceImpl implements EventService {
             Location location = locationRepository.save(LocationMapper.toLocation(eventDto.getLocation()));
             event.setLocation(location);
         }
+
+        if (Objects.equals(PUBLISH_EVENT, eventDto.getStateAction())) {
+            event.setState(PUBLISHED);
+            event.setPublishedOn(LocalDateTime.now());
+        }
+        if (Objects.equals(REJECT_EVENT, eventDto.getStateAction())) {
+            event.setState(CANCELED);
+        }
         Optional.ofNullable(eventDto.getPaid()).ifPresent(event::setPaid);
         Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(eventDto.getRequestModeration()).ifPresent(event::setRequestModeration);
         Optional.ofNullable(eventDto.getTitle()).ifPresent(event::setTitle);
-
-        if (eventDto.getStateAction() != null && eventDto.getStateAction().equals(StateAction.REJECT_EVENT)) {
-            event.setState(CANCELED);
-        }
-
         EventDto returnEventDto = EventMapper.toEventDto(eventRepository.save(event));
         return setConfirmedRequests(returnEventDto);
     }
