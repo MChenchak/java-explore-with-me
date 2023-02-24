@@ -31,7 +31,7 @@ public class AdminEventController {
         return eventService.getEventsByAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
-    @PutMapping("/{eventId}")
+    @PatchMapping("/{eventId}")
     public EventDto updateEventByAdmin(@PathVariable Long eventId,
                                        @RequestBody AdminUpdateEventDto eventDto) {
         log.info("update event with id {} by admin", eventId);
