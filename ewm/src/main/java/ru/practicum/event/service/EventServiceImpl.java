@@ -182,20 +182,6 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDto cancelEventByUser(Long eventId, Long userId) {
-        Event event = checkAndGetEvent(eventId);
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new BadRequestException("only initiator of event can change it");
-        }
-        if (!event.getState().equals(PENDING)) {
-            throw new BadRequestException("only pending event can be canceled");
-        }
-        event.setState(CANCELED);
-        EventDto eventDto = EventMapper.toEventDto(eventRepository.save(event));
-        return setConfirmedRequests(eventDto);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public List<EventDto> getEventsByAdmin(List<Long> userIds, List<String> states, List<Long> categoryIds,
                                            String rangeStart, String rangeEnd, int from, int size) {

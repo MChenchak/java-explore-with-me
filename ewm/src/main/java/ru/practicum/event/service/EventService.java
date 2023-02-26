@@ -18,8 +18,6 @@ public interface EventService {
 
     EventDto getEventByUser(Long eventId, Long userId);
 
-    EventDto cancelEventByUser(Long eventId, Long userId);
-
     List<EventDto> getEventsByAdmin(List<Long> userIds, List<String> states, List<Long> categoryIds,
                                     String rangeStart, String rangeEnd, int from, int size);
 

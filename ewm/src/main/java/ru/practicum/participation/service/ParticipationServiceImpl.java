@@ -75,8 +75,9 @@ public class ParticipationServiceImpl implements ParticipationService {
 
     @Override
     public ParticipationDto cancelParticipationRequest(Long userId, Long reqId) {
-        Participation participation = participationRepository.findByIdAndRequesterId(reqId, userId)
-                .orElseThrow(() -> new BadRequestException("only requester can cancel participation request"));
+        Participation participation = participationRepository.canselParticipationRequest(reqId, userId);
+        if (participation == null)
+            throw new NotFoundException("Request with id=" + reqId + " was not found");
         participation.setStatus(CANCELED);
         return ParticipationMapper.toParticipationDto(participationRepository.save(participation));
     }
