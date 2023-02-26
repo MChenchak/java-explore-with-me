@@ -1,6 +1,7 @@
 package ru.practicum.event.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.dto.EventDto;
 import ru.practicum.event.dto.NewEventDto;
@@ -33,11 +34,13 @@ public class UserEventController {
         return eventService.getUserEvents(userId, from, size);
     }
 
-    @PatchMapping
+    @PatchMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.OK)
     public EventDto updateEvent(@PathVariable Long userId,
+                                @PathVariable Long eventId,
                                 @RequestBody UserUpdateEventDto eventDto) {
         log.info("update event by owner with id {}", userId);
-        return eventService.updateEvent(userId, eventDto);
+        return eventService.updateEvent(userId, eventId, eventDto);
     }
 
     @PostMapping
@@ -54,7 +57,8 @@ public class UserEventController {
         return eventService.getEventByUser(eventId, userId);
     }
 
-    @PatchMapping("/{eventId}")
+    @PatchMapping("/{eventId}/requests")
+    @ResponseStatus(HttpStatus.OK)
     public EventDto cancelEventByUser(@PathVariable Long userId,
                                       @PathVariable Long eventId) {
         log.info("cancel event with id {} by owner with id {}", eventId, userId);

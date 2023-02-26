@@ -122,8 +122,8 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventDto updateEvent(Long userId, UserUpdateEventDto eventDto) {
-        Event event = checkAndGetEvent(eventDto.getEventId());
+    public EventDto updateEvent(Long userId, Long eventId, UserUpdateEventDto eventDto) {
+        Event event = checkAndGetEvent(eventId);
         if (!event.getInitiator().getId().equals(userId)) {
             throw new BadRequestException("only initiator can update event");
         }
@@ -147,7 +147,9 @@ public class EventServiceImpl implements EventService {
         Optional.ofNullable(eventDto.getPaid()).ifPresent(event::setPaid);
         Optional.ofNullable(eventDto.getParticipantLimit()).ifPresent(event::setParticipantLimit);
         Optional.ofNullable(eventDto.getTitle()).ifPresent(event::setTitle);
-        if (event.getState().equals(CANCELED)) {
+        if (eventDto.getStateAction().name().equals("CANCEL_REVIEW")) {
+            event.setState(CANCELED);
+        } else {
             event.setState(PENDING);
         }
         EventDto returnEventDto = EventMapper.toEventDto(eventRepository.save(event));

@@ -12,7 +12,7 @@ public interface EventService {
 
     List<ShortEventDto> getUserEvents(Long userId, int from, int size);
 
-    EventDto updateEvent(Long userId, UserUpdateEventDto eventDto);
+    EventDto updateEvent(Long userId, Long eventId, UserUpdateEventDto eventDto);
 
     EventDto createEvent(Long userId, NewEventDto eventDto);
 

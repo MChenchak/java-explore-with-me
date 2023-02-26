@@ -22,4 +22,11 @@ public class UserUpdateEventDto {
     private Integer participantLimit;
 
     private String title;
+
+    private State stateAction;
+
+    public enum State {
+        SEND_TO_REVIEW,
+        CANCEL_REVIEW
+    }
 }
