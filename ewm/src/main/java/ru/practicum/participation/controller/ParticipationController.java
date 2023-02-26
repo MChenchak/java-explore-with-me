@@ -33,7 +33,6 @@ public class ParticipationController {
     @PatchMapping("/{requestId}/cancel")
     public ParticipationDto cancelParticipationRequest(@PathVariable Long userId,
                                                        @PathVariable Long requestId) {
-        log.info("cancel participation request {} by user {}", requestId, userId);
         return participationService.cancelParticipationRequest(userId, requestId);
     }
 }

@@ -44,12 +44,22 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto updateCategory(Long id, CategoryDto categoryDto) {
         Category category = getAndCheckCategory(id);
+        if (categoryRepository.findAll()
+                .stream()
+                .anyMatch(c -> c.getName().equals(categoryDto.getName()))) {
+            throw new BadRequestException("Такая категория уже существует");
+        }
         category.setName(categoryDto.getName());
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));
     }
 
     @Override
     public CategoryDto createCategory(NewCategoryDto categoryDto) {
+        if (categoryRepository.findAll()
+                .stream()
+                .anyMatch(c -> c.getName().equals(categoryDto.getName()))) {
+            throw new BadRequestException("Такая категория уже существует");
+        }
         return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper.toCategory(categoryDto)));
     }
 
