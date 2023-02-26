@@ -23,7 +23,7 @@ public class AdminCategoryController {
     @ResponseStatus(HttpStatus.OK)
     public CategoryDto updateCategory(@PathVariable("catId") Long id,
                                       @Valid @RequestBody CategoryDto categoryDto) {
-        log.info("update category with id {}", categoryDto.getId());
+        log.info("update category with id {}", id);
         return categoryService.updateCategory(id, categoryDto);
     }
 
