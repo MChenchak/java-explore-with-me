@@ -2,17 +2,21 @@ package ru.practicum.participation.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.event.dto.RequestStatusUpdateDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.repository.EventRepository;
 import ru.practicum.exception.BadRequestException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.participation.dto.ParticipationDto;
+import ru.practicum.participation.dto.RequestListDto;
 import ru.practicum.participation.mapper.ParticipationMapper;
 import ru.practicum.participation.model.Participation;
+import ru.practicum.participation.model.StatusRequest;
 import ru.practicum.participation.repository.ParticipationRepository;
 import ru.practicum.user.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,47 +95,53 @@ public class ParticipationServiceImpl implements ParticipationService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public ParticipationDto confirmParticipationRequest(Long eventId, Long userId, Long reqId) {
-        Participation participation = checkAndGetParticipation(reqId);
-        Event event = checkAndGetEvent(eventId);
-        equalsOfParameters(userId, event, participation);
-        if (!participation.getStatus().equals(PENDING)) {
-            throw new BadRequestException("only participation request with status pending can be approval");
-        }
-        if (event.getParticipantLimit() <= participationRepository.countParticipationByEventIdAndStatus(eventId, CONFIRMED)) {
-            participation.setStatus(REJECTED);
-        } else {
-            participation.setStatus(CONFIRMED);
-        }
-        return ParticipationMapper.toParticipationDto(participationRepository.save(participation));
+    public RequestListDto updateRequestsStatusForEvent(Long eventId, Long userId, RequestStatusUpdateDto dto) {
+        Event storedEvent = eventRepository.findById(eventId).orElseThrow(() ->
+                new NotFoundException("Событие с id" + eventId + "не найдено"));
+        userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException("Пользователь с id" + userId + "не найден"));
+        List<Participation> requestsForUpdate = participationRepository.findStoredUpdRequests(eventId, dto.getRequestIds());
+        checkRequestsListForUpdate(dto.getStatus(), storedEvent, requestsForUpdate);
+        eventRepository.save(storedEvent);
+        return createRequestListDto(dto.getRequestIds());
     }
 
-    @Override
-    public ParticipationDto rejectParticipationRequest(Long eventId, Long userId, Long reqId) {
-        Participation participation = checkAndGetParticipation(reqId);
-        Event event = checkAndGetEvent(eventId);
-        equalsOfParameters(userId, event, participation);
-        participation.setStatus(REJECTED);
-        return ParticipationMapper.toParticipationDto(participationRepository.save(participation));
-    }
-
-    private Participation checkAndGetParticipation(Long id) {
-        return participationRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("participation request with id = " + id + " not found"));
-    }
-
-    private Event checkAndGetEvent(Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("event with id = " + id + " not found"));
-    }
-
-    private void equalsOfParameters(Long userId, Event event, Participation participation) {
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new BadRequestException("only initiator of event can confirm or reject participation request to this event");
-        }
-        if (!event.getId().equals(participation.getEvent().getId())) {
-            throw new BadRequestException("eventId not equals eventId of participation request");
+    private void checkRequestsListForUpdate(StatusRequest newStatus,
+                                            Event storedEvent, List<Participation> requestsForUpdate) {
+        for (Participation request : requestsForUpdate) {
+            if (storedEvent.getParticipantLimit() == 0) {
+                request.setStatus(StatusRequest.REJECTED);
+                participationRepository.save(request);
+                throw new BadRequestException("Мест нет");
+            }
+            if (!request.getStatus().equals(StatusRequest.PENDING)) {
+                throw new BadRequestException("Запрос не в ожидании");
+            }
+            if (newStatus.equals(StatusRequest.CONFIRMED)) {
+                request.setStatus(StatusRequest.CONFIRMED);
+                participationRepository.save(request);
+                storedEvent.setParticipantLimit(storedEvent.getParticipantLimit() - 1);
+            }
+            if (newStatus.equals(StatusRequest.REJECTED)) {
+                request.setStatus(StatusRequest.REJECTED);
+                participationRepository.save(request);
+            }
         }
     }
+
+    private RequestListDto createRequestListDto(List<Long> idRequests) {
+        List<ParticipationDto> confirmedRequests = participationRepository.findStoredUpdRequestsWithStatus(StatusRequest.CONFIRMED,
+                        idRequests)
+                .stream()
+                .map(ParticipationMapper::toParticipationDto)
+                .collect(Collectors.toList());
+        List<ParticipationDto> rejectedRequests = participationRepository.findStoredUpdRequestsWithStatus(StatusRequest.REJECTED,
+                        idRequests)
+                .stream()
+                .map(ParticipationMapper::toParticipationDto)
+                .collect(Collectors.toList());
+        return new RequestListDto(confirmedRequests, rejectedRequests);
+    }
+
+
 }

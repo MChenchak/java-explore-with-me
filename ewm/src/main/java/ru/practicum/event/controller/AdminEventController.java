@@ -38,15 +38,4 @@ public class AdminEventController {
         return eventService.updateEventByAdmin(eventId, eventDto);
     }
 
-//    @PatchMapping("/{eventId}/publish")
-//    public EventDto publishEvent(@PathVariable Long eventId) {
-//        log.info("publish event with id {} by admin", eventId);
-//        return eventService.publishEvent(eventId);
-//    }
-
-//    @PatchMapping("/{eventId}/reject")
-//    public EventDto rejectEvent(@PathVariable Long eventId) {
-//        log.info("reject event with id {} by admin", eventId);
-//        return eventService.rejectEvent(eventId);
-//    }
 }

@@ -1,7 +1,10 @@
 package ru.practicum.event.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import ru.practicum.event.model.StateAction;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +17,8 @@ public class AdminUpdateEventDto {
 
     private String description;
 
-    private String eventDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
 
     private LocationDto location;
 

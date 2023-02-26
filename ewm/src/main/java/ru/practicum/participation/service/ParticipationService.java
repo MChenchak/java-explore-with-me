@@ -1,6 +1,8 @@
 package ru.practicum.participation.service;
 
+import ru.practicum.event.dto.RequestStatusUpdateDto;
 import ru.practicum.participation.dto.ParticipationDto;
+import ru.practicum.participation.dto.RequestListDto;
 
 import java.util.List;
 
@@ -13,8 +15,6 @@ public interface ParticipationService {
 
     List<ParticipationDto> getParticipationRequests(Long eventId, Long userId);
 
-    ParticipationDto confirmParticipationRequest(Long eventId, Long userId, Long reqId);
-
-    ParticipationDto rejectParticipationRequest(Long eventId, Long userId, Long reqId);
+    RequestListDto updateRequestsStatusForEvent(Long eventId, Long userId, RequestStatusUpdateDto dto);
 
 }

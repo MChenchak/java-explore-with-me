@@ -204,6 +204,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto updateEventByAdmin(Long eventId, AdminUpdateEventDto eventDto) {
         Event event = checkAndGetEvent(eventId);
+        updValidationDtoForAdmin(event, eventDto);
         Optional.ofNullable(eventDto.getAnnotation()).ifPresent(event::setAnnotation);
         if (eventDto.getCategory() != null) {
             event.setCategory(categoryRepository.findById(eventDto.getCategory())
@@ -211,7 +212,7 @@ public class EventServiceImpl implements EventService {
         }
         Optional.ofNullable(eventDto.getDescription()).ifPresent(event::setDescription);
         if (eventDto.getEventDate() != null) {
-            event.setEventDate(LocalDateTime.parse(eventDto.getEventDate(), DATE_TIME_FORMATTER));
+            event.setEventDate(eventDto.getEventDate());
         }
         if (eventDto.getLocation() != null) {
             Location location = locationRepository.save(LocationMapper.toLocation(eventDto.getLocation()));
@@ -259,5 +260,39 @@ public class EventServiceImpl implements EventService {
     private User checkAndGetUser(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("user with id = " + id + " not found"));
+    }
+
+    private void updValidationDtoForUser(Long userId, AdminUpdateEventDto eventUpdateDto, Event stored) {
+        if (!stored.getInitiator().getId().equals(userId)) {
+            throw new BadRequestException("Изменять может только владелец");
+        }
+        if (stored.getState().equals(State.PUBLISHED)) {
+            throw new BadRequestException("Условия выполнения не соблюдены");
+        }
+        if (eventUpdateDto.getEventDate() != null) {
+            if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+                throw new BadRequestException("Условия выполнения не соблюдены");
+            }
+        }
+        if (stored.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
+            throw new BadRequestException("Условия выполнения не соблюдены");
+        }
+        if (stored.getParticipantLimit() == 0) {
+            throw new BadRequestException("Мест нет");
+        }
+    }
+
+    private void updValidationDtoForAdmin(Event stored, AdminUpdateEventDto eventUpdateAdminDto) {
+        if (!Objects.equals(State.PENDING, stored.getState())) {
+            throw new BadRequestException("Условия выполнения не соблюдены");
+        }
+        if (stored.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
+            throw new BadRequestException("Неверно указана дата события");
+        }
+        if (eventUpdateAdminDto.getEventDate() != null) {
+            if (eventUpdateAdminDto.getEventDate().isBefore(LocalDateTime.now())) {
+                throw new BadRequestException("Условия выполнения не соблюдены");
+            }
+        }
     }
 }

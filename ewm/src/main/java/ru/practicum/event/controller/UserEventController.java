@@ -3,12 +3,10 @@ package ru.practicum.event.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.event.dto.EventDto;
-import ru.practicum.event.dto.NewEventDto;
-import ru.practicum.event.dto.ShortEventDto;
-import ru.practicum.event.dto.UserUpdateEventDto;
+import ru.practicum.event.dto.*;
 import ru.practicum.event.service.EventService;
 import ru.practicum.participation.dto.ParticipationDto;
+import ru.practicum.participation.dto.RequestListDto;
 import ru.practicum.participation.service.ParticipationService;
 
 import javax.validation.Valid;
@@ -58,14 +56,6 @@ public class UserEventController {
         return eventService.getEventByUser(eventId, userId);
     }
 
-//    @PatchMapping("/{eventId}/requests")
-//    @ResponseStatus(HttpStatus.OK)
-//    public EventDto cancelEventByUser(@PathVariable Long userId,
-//                                      @PathVariable Long eventId) {
-//        log.info("cancel event with id {} by owner with id {}", eventId, userId);
-//        return eventService.cancelEventByUser(eventId, userId);
-//    }
-
     @GetMapping("/{eventId}/requests")
     public List<ParticipationDto> getParticipationRequests(@PathVariable Long userId,
                                                            @PathVariable Long eventId) {
@@ -74,18 +64,11 @@ public class UserEventController {
     }
 
     @PatchMapping("/{eventId}/requests")
-    public ParticipationDto confirmParticipationRequest(@PathVariable Long userId,
-                                                        @PathVariable Long eventId,
-                                                        @PathVariable Long reqId) {
-        log.info("confirm participation requests {} by owner {} of event with id {}", reqId, userId, eventId);
-        return participationService.confirmParticipationRequest(eventId, userId, reqId);
+    public RequestListDto patchRequestsState(@PathVariable Long userId,
+                                                      @PathVariable Long eventId,
+                                                      @RequestBody RequestStatusUpdateDto dto) {
+        return participationService.updateRequestsStatusForEvent(eventId, userId, dto);
     }
 
-    @PatchMapping("/{eventId}/requests/{reqId}/cancel")
-    public ParticipationDto rejectParticipationRequest(@PathVariable Long userId,
-                                                       @PathVariable Long eventId,
-                                                       @PathVariable Long reqId) {
-        log.info("reject participation requests {} by owner {} of event with id {}", reqId, userId, eventId);
-        return participationService.rejectParticipationRequest(eventId, userId, reqId);
-    }
+
 }
