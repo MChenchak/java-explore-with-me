@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.ShortCompilationDto;
+import ru.practicum.compilation.dto.UpdateCompilationDto;
 import ru.practicum.compilation.service.CompilationService;
 
 import javax.validation.Valid;
@@ -22,21 +23,18 @@ public class AdminControllerCompilation {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(@Valid @RequestBody ShortCompilationDto compilationDto) {
-        log.info("create new compilation");
         return compilationService.createCompilation(compilationDto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable Long id) {
-        log.info("delete compilation with id {}", id);
         compilationService.deleteCompilation(id);
     }
 
     @PatchMapping("/{compId}")
     public CompilationDto patchCompilation(@PathVariable Long compId,
-                                                @Valid @RequestBody ShortCompilationDto compilationDto) {
-        log.info("patch compilation with id {}", compId);
+                                           @Valid @RequestBody UpdateCompilationDto compilationDto) {
         return compilationService.patch(compId, compilationDto);
     }
 }

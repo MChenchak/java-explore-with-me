@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.ShortCompilationDto;
+import ru.practicum.compilation.dto.UpdateCompilationDto;
 import ru.practicum.compilation.mapper.CompilationMapper;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.compilation.repository.CompilationRepository;
@@ -70,7 +71,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public CompilationDto patch(Long compId, ShortCompilationDto compilationDto) {
+    public CompilationDto patch(Long compId, UpdateCompilationDto compilationDto) {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("compilation with id = " + compId + " not found"));
 
@@ -104,7 +105,7 @@ public class CompilationServiceImpl implements CompilationService {
                 .orElseThrow(() -> new NotFoundException("compilation with id = " + id + " not found"));
     }
 
-    private Compilation createCompilationForUpdate(Compilation stored, ShortCompilationDto updatingCompilationDto) {
+    private Compilation createCompilationForUpdate(Compilation stored, UpdateCompilationDto updatingCompilationDto) {
         if (updatingCompilationDto.getPinned() != null) {
             stored.setPinned(updatingCompilationDto.getPinned());
         }
