@@ -10,7 +10,7 @@ public interface CategoryService {
 
     CategoryDto getCategory(Long id);
 
-    CategoryDto updateCategory(CategoryDto categoryDto);
+    CategoryDto updateCategory(Long id, CategoryDto categoryDto);
 
     CategoryDto createCategory(NewCategoryDto categoryDto);
 

@@ -19,10 +19,12 @@ public class AdminCategoryController {
         this.categoryService = categoryService;
     }
 
-    @PatchMapping
-    public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto) {
+    @PatchMapping("/{catId}")
+    @ResponseStatus(HttpStatus.OK)
+    public CategoryDto updateCategory(@PathVariable("catId") Long id,
+                                      @Valid @RequestBody CategoryDto categoryDto) {
         log.info("update category with id {}", categoryDto.getId());
-        return categoryService.updateCategory(categoryDto);
+        return categoryService.updateCategory(id, categoryDto);
     }
 
     @PostMapping
