@@ -81,11 +81,11 @@ public class UserEventController {
         return participationService.confirmParticipationRequest(eventId, userId, reqId);
     }
 
-//    @PatchMapping("/{eventId}/requests/{reqId}/reject")
-//    public ParticipationDto rejectParticipationRequest(@PathVariable Long userId,
-//                                                       @PathVariable Long eventId,
-//                                                       @PathVariable Long reqId) {
-//        log.info("reject participation requests {} by owner {} of event with id {}", reqId, userId, eventId);
-//        return participationService.rejectParticipationRequest(eventId, userId, reqId);
-//    }
+    @PatchMapping("/{eventId}/requests/{reqId}/cancel")
+    public ParticipationDto rejectParticipationRequest(@PathVariable Long userId,
+                                                       @PathVariable Long eventId,
+                                                       @PathVariable Long reqId) {
+        log.info("reject participation requests {} by owner {} of event with id {}", reqId, userId, eventId);
+        return participationService.rejectParticipationRequest(eventId, userId, reqId);
+    }
 }
