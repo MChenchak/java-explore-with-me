@@ -44,6 +44,7 @@ public class UserEventController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public EventDto createEvent(@PathVariable Long userId,
                                 @Valid @RequestBody NewEventDto eventDto) {
         log.info("create event by user with id {}", userId);

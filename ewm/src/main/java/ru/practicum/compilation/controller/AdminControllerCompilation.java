@@ -1,6 +1,7 @@
 package ru.practicum.compilation.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.ShortCompilationDto;
@@ -19,12 +20,14 @@ public class AdminControllerCompilation {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public CompilationDto createCompilation(@Valid @RequestBody ShortCompilationDto compilationDto) {
         log.info("create new compilation");
         return compilationService.createCompilation(compilationDto);
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCompilation(@PathVariable Long id) {
         log.info("delete compilation with id {}", id);
         compilationService.deleteCompilation(id);

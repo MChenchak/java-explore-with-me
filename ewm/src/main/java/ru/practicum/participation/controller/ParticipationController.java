@@ -1,6 +1,7 @@
 package ru.practicum.participation.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.participation.dto.ParticipationDto;
 import ru.practicum.participation.service.ParticipationService;
@@ -24,6 +25,7 @@ public class ParticipationController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public ParticipationDto createParticipationRequest(@PathVariable Long userId,
                                                        @RequestParam Long eventId) {
         log.info("create participation request by user {} to event {}", userId, eventId);
