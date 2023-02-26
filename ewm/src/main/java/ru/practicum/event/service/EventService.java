@@ -24,9 +24,5 @@ public interface EventService {
                                     String rangeStart, String rangeEnd, int from, int size);
 
     EventDto updateEventByAdmin(Long eventId, AdminUpdateEventDto eventDto);
-
-    EventDto publishEvent(Long eventId);
-
-    EventDto rejectEvent(Long eventId);
 }
 

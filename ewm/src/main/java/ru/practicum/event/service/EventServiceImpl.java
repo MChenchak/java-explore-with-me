@@ -247,28 +247,6 @@ public class EventServiceImpl implements EventService {
         return setConfirmedRequests(returnEventDto);
     }
 
-    @Override
-    public EventDto publishEvent(Long eventId) {
-        Event event = checkAndGetEvent(eventId);
-        if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
-            throw new BadRequestException("event must start min after one hour of now");
-        }
-        if (!event.getState().equals(PENDING)) {
-            throw new BadRequestException("state of event must be PENDING");
-        }
-        event.setState(PUBLISHED);
-        EventDto eventDto = EventMapper.toEventDto(eventRepository.save(event));
-        return setConfirmedRequests(eventDto);
-    }
-
-    @Override
-    public EventDto rejectEvent(Long eventId) {
-        Event event = checkAndGetEvent(eventId);
-        event.setState(CANCELED);
-        EventDto eventDto = EventMapper.toEventDto(eventRepository.save(event));
-        return setConfirmedRequests(eventDto);
-    }
-
     private EventDto setConfirmedRequests(EventDto eventDto) {
         eventDto.setConfirmedRequests(participationRepository.countParticipationByEventIdAndStatus(eventDto.getId(),
                 CONFIRMED));
