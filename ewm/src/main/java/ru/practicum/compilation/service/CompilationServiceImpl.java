@@ -70,32 +70,15 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     @Override
-    public void deleteEventFromCompilation(Long id, Long eventId) {
-        Compilation compilation = getAndCheckCompilation(id);
-        compilation.getEvents().remove(getAndCheckEvent(eventId));
-        compilationRepository.save(compilation);
+    public CompilationDto patch(Long compId, ShortCompilationDto compilationDto) {
+        Compilation compilation = compilationRepository.findById(compId)
+                .orElseThrow(() -> new NotFoundException("compilation with id = " + compId + " not found"));
+
+        Compilation newCompilation = createCompilationForUpdate(compilation, compilationDto);
+        compilationRepository.save(newCompilation);
+        return CompilationMapper.toCompilationDto(newCompilation);
     }
 
-    @Override
-    public void addEventToCompilation(Long id, Long eventId) {
-        Compilation compilation = getAndCheckCompilation(id);
-        compilation.getEvents().add(getAndCheckEvent(eventId));
-        compilationRepository.save(compilation);
-    }
-
-    @Override
-    public void deleteCompilationFromMainPage(Long id) {
-        Compilation compilation = getAndCheckCompilation(id);
-        compilation.setPinned(false);
-        compilationRepository.save(compilation);
-    }
-
-    @Override
-    public void addCompilationToMainPage(Long id) {
-        Compilation compilation = getAndCheckCompilation(id);
-        compilation.setPinned(true);
-        compilationRepository.save(compilation);
-    }
 
     private ShortEventDto setConfirmedRequests(ShortEventDto eventDto) {
         eventDto.setConfirmedRequests(participationRepository.countParticipationByEventIdAndStatus(eventDto.getId(),
@@ -119,5 +102,18 @@ public class CompilationServiceImpl implements CompilationService {
     private Compilation getAndCheckCompilation(Long id) {
         return compilationRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("compilation with id = " + id + " not found"));
+    }
+
+    private Compilation createCompilationForUpdate(Compilation stored, ShortCompilationDto updatingCompilationDto) {
+        if (updatingCompilationDto.getPinned() != null) {
+            stored.setPinned(updatingCompilationDto.getPinned());
+        }
+        if (updatingCompilationDto.getTitle() != null) {
+            stored.setTitle(updatingCompilationDto.getTitle());
+        }
+        if (updatingCompilationDto.getEvents() != null) {
+            stored.setEvents(eventRepository.findAllByEvents(updatingCompilationDto.getEvents()));
+        }
+        return stored;
     }
 }

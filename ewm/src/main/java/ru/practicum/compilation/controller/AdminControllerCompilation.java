@@ -33,29 +33,10 @@ public class AdminControllerCompilation {
         compilationService.deleteCompilation(id);
     }
 
-    @DeleteMapping("/{id}/events/{eventId}")
-    public void deleteEventFromCompilation(@PathVariable Long id,
-                                           @PathVariable Long eventId) {
-        log.info("delete event with id {} from compilation with id {}", eventId, id);
-        compilationService.deleteEventFromCompilation(id, eventId);
-    }
-
-    @PatchMapping("/{id}/events/{eventId}")
-    public void addEventToCompilation(@PathVariable Long id,
-                                      @PathVariable Long eventId) {
-        log.info("add event with id {} to compilation with id {}", eventId, id);
-        compilationService.addEventToCompilation(id, eventId);
-    }
-
-    @DeleteMapping("/{id}/pin")
-    public void deleteCompilationFromMainPage(@PathVariable Long id) {
-        log.info("delete compilation with id {} from main page", id);
-        compilationService.deleteCompilationFromMainPage(id);
-    }
-
-    @PatchMapping("/{id}/pin")
-    public void addCompilationToMainPage(@PathVariable Long id) {
-        log.info("add compilation with id {} to main page", id);
-        compilationService.addCompilationToMainPage(id);
+    @PatchMapping("/{compId}")
+    public CompilationDto patchCompilation(@PathVariable Long compId,
+                                                @Valid @RequestBody ShortCompilationDto compilationDto) {
+        log.info("patch compilation with id {}", compId);
+        return compilationService.patch(compId, compilationDto);
     }
 }

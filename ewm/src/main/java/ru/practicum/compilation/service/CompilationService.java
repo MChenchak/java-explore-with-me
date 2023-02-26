@@ -14,11 +14,6 @@ public interface CompilationService {
 
     void deleteCompilation(Long id);
 
-    void deleteEventFromCompilation(Long id, Long eventId);
+    CompilationDto patch(Long compId, ShortCompilationDto compilationDto);
 
-    void addEventToCompilation(Long id, Long eventId);
-
-    void deleteCompilationFromMainPage(Long id);
-
-    void addCompilationToMainPage(Long id);
 }

@@ -27,4 +27,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "AND e.paid = :paid " +
             "AND e.state IN :state")
     Page<Event> searchEvents(String text, List<Long> categoryIds, Boolean paid, State state, Pageable pageable);
+
+    @Query("SELECT e FROM Event e WHERE e.id IN :events")
+    List<Event> findAllByEvents(List<Long> events);
 }
