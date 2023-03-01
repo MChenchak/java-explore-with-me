@@ -12,7 +12,7 @@ services:
 
 
   stats-server:
-    build: stat
+    build: stat/
     container_name: stat_svc
     ports:
       - "9090:9090"
@@ -24,13 +24,21 @@ services:
       - DB_USERNAME=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
 
-
-
   ewm-service:
-    build: ewm
+    build:
+      context: ewm
+      dockerfile: Dockerfile
     container_name: ewm-service
     ports:
       - "8080:8080"
+    depends_on:
+      - ewm-db
+    environment:
+      - STATS_SERVER_URL=http://stats-server:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+
 
   ewm-db:
     container_name: ewm_db
@@ -38,7 +46,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=ewm
+      - POSTGRES_DB=ewm-db
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
 
