@@ -1,6 +1,7 @@
 package ru.practicum.comment.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.service.CommentService;
@@ -20,6 +21,7 @@ public class UserCommentController {
     }
 
     @PostMapping("/{eventId}")
+    @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createComment(@Valid @RequestBody CommentDto commentDto,
                                     @Positive @PathVariable Long userId,
                                     @Positive @PathVariable Long eventId) {
