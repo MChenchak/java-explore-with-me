@@ -113,7 +113,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional(readOnly = true)
     public List<ShortEventDto> getUserEvents(Long userId, int from, int size) {
-        User user = checkAndGetUser(userId);
+        checkAndGetUser(userId);
         return eventRepository.findAllByInitiatorId(userId, PageRequest.of(from / size, size))
                 .stream()
                 .map(EventMapper::toShortEventDto)
