@@ -9,6 +9,10 @@ import static ru.practicum.comment.model.CommentState.NEW;
 import static ru.practicum.user.Constant.DATE_TIME_FORMATTER;
 
 public class CommentMapper {
+
+    private CommentMapper() {
+    }
+
     public static CommentDto toCommentDto(Comment comment) {
         return CommentDto
                 .builder()

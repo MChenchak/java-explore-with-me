@@ -59,12 +59,10 @@ public class EventServiceImpl implements EventService {
         List<ShortEventDto> events = eventRepository.searchEvents(text, categoryIds, paid, PUBLISHED,
                         PageRequest.of(from / size, size))
                 .stream()
-                .filter(event -> rangeStart != null ?
-                        event.getEventDate().isAfter(LocalDateTime.parse(rangeStart, DATE_TIME_FORMATTER)) :
-                        event.getEventDate().isAfter(LocalDateTime.now())
-                                && rangeEnd != null ? event.getEventDate().isBefore(LocalDateTime.parse(rangeEnd,
-                                DATE_TIME_FORMATTER)) :
-                                event.getEventDate().isBefore(LocalDateTime.MAX))
+                .filter(event ->
+                        event.getEventDate().isAfter(getStartEventDateTime(rangeStart))
+                                && event.getEventDate().isBefore(getEndEventDateTime(rangeEnd))
+                )
                 .map(EventMapper::toShortEventDto)
                 .map(this::setConfirmedRequests)
                 .collect(Collectors.toList());
@@ -191,11 +189,10 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
         return eventRepository.searchEventsByAdmin(userIds, stateList, categoryIds, PageRequest.of(from / size, size))
                 .stream()
-                .filter(event -> rangeStart != null ?
-                        event.getEventDate().isAfter(LocalDateTime.parse(rangeStart, DATE_TIME_FORMATTER)) :
-                        event.getEventDate().isAfter(LocalDateTime.now())
-                                && rangeEnd != null ? event.getEventDate().isBefore(LocalDateTime.parse(rangeEnd,
-                                DATE_TIME_FORMATTER)) : event.getEventDate().isBefore(LocalDateTime.MAX))
+                .filter(event ->
+                        event.getEventDate().isAfter(getStartEventDateTime(rangeStart))
+                                && event.getEventDate().isBefore(getEndEventDateTime(rangeEnd))
+                )
                 .map(EventMapper::toEventDto)
                 .map(this::setConfirmedRequests)
                 .collect(Collectors.toList());
@@ -262,25 +259,6 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("user with id = " + id + " not found"));
     }
 
-    private void updValidationDtoForUser(Long userId, AdminUpdateEventDto eventUpdateDto, Event stored) {
-        if (!stored.getInitiator().getId().equals(userId)) {
-            throw new BadRequestException("Изменять может только владелец");
-        }
-        if (stored.getState().equals(State.PUBLISHED)) {
-            throw new BadRequestException("Условия выполнения не соблюдены");
-        }
-        if (eventUpdateDto.getEventDate() != null) {
-            if (eventUpdateDto.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new BadRequestException("Условия выполнения не соблюдены");
-            }
-        }
-        if (stored.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new BadRequestException("Условия выполнения не соблюдены");
-        }
-        if (stored.getParticipantLimit() == 0) {
-            throw new BadRequestException("Мест нет");
-        }
-    }
 
     private void updValidationDtoForAdmin(Event stored, AdminUpdateEventDto eventUpdateAdminDto) {
         if (!Objects.equals(State.PENDING, stored.getState())) {
@@ -289,10 +267,28 @@ public class EventServiceImpl implements EventService {
         if (stored.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
             throw new BadRequestException("Неверно указана дата события");
         }
-        if (eventUpdateAdminDto.getEventDate() != null) {
-            if (eventUpdateAdminDto.getEventDate().isBefore(LocalDateTime.now())) {
-                throw new BadRequestException("Условия выполнения не соблюдены");
-            }
+        if (eventUpdateAdminDto.getEventDate() != null
+                && eventUpdateAdminDto.getEventDate().isBefore(LocalDateTime.now())) {
+            throw new BadRequestException("Условия выполнения не соблюдены");
         }
     }
+
+    private LocalDateTime getStartEventDateTime(String dt) {
+        if (dt == null) {
+            return LocalDateTime.now();
+        }
+
+        return LocalDateTime.parse(dt, DATE_TIME_FORMATTER);
+
+    }
+
+    private LocalDateTime getEndEventDateTime(String dt) {
+        if (dt == null) {
+            return LocalDateTime.MAX;
+        }
+
+        return LocalDateTime.parse(dt, DATE_TIME_FORMATTER);
+
+    }
+
 }

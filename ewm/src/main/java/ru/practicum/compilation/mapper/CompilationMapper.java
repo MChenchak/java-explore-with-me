@@ -8,6 +8,11 @@ import ru.practicum.event.mapper.EventMapper;
 import java.util.stream.Collectors;
 
 public class CompilationMapper {
+
+    private CompilationMapper() {
+
+    }
+
     public static Compilation toCompilation(CompilationDto compilationDto) {
         return Compilation
                 .builder()

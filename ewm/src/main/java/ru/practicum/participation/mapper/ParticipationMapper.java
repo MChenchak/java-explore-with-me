@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 import static ru.practicum.user.Constant.DATE_TIME_FORMATTER;
 
 public class ParticipationMapper {
+
+    private ParticipationMapper() {
+    }
+
     public static ParticipationDto toParticipationDto(Participation participation) {
         return ParticipationDto
                 .builder()
