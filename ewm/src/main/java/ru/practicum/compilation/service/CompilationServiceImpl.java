@@ -95,10 +95,6 @@ public class CompilationServiceImpl implements CompilationService {
         return compilationDto;
     }
 
-    private Event getAndCheckEvent(Long id) {
-        return eventRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("event with id = " + id + " not found"));
-    }
 
     private Compilation getAndCheckCompilation(Long id) {
         return compilationRepository.findById(id)

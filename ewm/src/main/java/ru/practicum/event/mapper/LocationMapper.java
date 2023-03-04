@@ -4,6 +4,9 @@ import ru.practicum.event.dto.LocationDto;
 import ru.practicum.event.model.Location;
 
 public class LocationMapper {
+    private LocationMapper() {
+    }
+
     public static LocationDto toLocationDto(Location location) {
         return LocationDto
                 .builder()

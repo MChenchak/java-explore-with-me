@@ -15,6 +15,10 @@ import static ru.practicum.user.Constant.DATE_TIME_FORMATTER;
 import static ru.practicum.user.mapper.UserMapper.toShortUserDto;
 
 public class EventMapper {
+
+    private EventMapper() {
+    }
+
     public static EventDto toEventDto(Event event) {
         return EventDto
                 .builder()
